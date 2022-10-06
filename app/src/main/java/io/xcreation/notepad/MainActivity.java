@@ -1,7 +1,5 @@
 package io.xcreation.notepad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -9,29 +7,31 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class MainActivity extends AppCompatActivity {
     EditText editText1;
     ScrollView scrollView;
     String fileName;
-    private static String DATA_FOLDER_NAME = ".xio";
+    final private static String DATA_FOLDER_NAME = ".xio";
     private static String DATA_FOLDER;
 
     @Override
-    public void onCreate(Bundle bundle)
-    {
+    public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         getWindow().setSoftInputMode(3);
-
 
         int nightModeFlags = getResources().getConfiguration().uiMode &
                 Configuration.UI_MODE_NIGHT_MASK;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         this.editText1 = (EditText) findViewById(R.id.mainTextField);
         this.scrollView = (ScrollView) findViewById(R.id.scrollView);
 
-        String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         // Overwrite External Data folder with absolute path
         MainActivity.DATA_FOLDER = Paths.get(__root__, MainActivity.DATA_FOLDER_NAME, getResources().getString(R.string.app_name)).toString();
@@ -61,23 +61,30 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if permission is already granted
         // If not, request.
-        if (isStoragePermissionGranted())
-        {
+        if (isStoragePermissionGranted()) {
             createFolder();
             start();
         }
 
-        // TODO: Touch layout then focus on textfield
+        // TODO: Touch layout/Scrollview then focus on textfield
+        /**
+        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                showSoftKeyboard(view);
+                return false;
+            }
+        });
+        **/
+
     }
 
-    protected void start()
-    {
-        try
-        {
+    protected void start() {
+        try {
             File file = new File(this.fileName);
 
-            if (!file.exists())
-            {
+            if (!file.exists()) {
                 file.createNewFile();
             }
 
@@ -90,32 +97,25 @@ public class MainActivity extends AppCompatActivity {
             this.editText1.setText(new String(bArr));
 
             fis.close();
-        }
-        catch (Exception err)
-        {
+        } catch (Exception err) {
             makeToast(err.toString());
         }
     }
 
-    public void createFolder()
-    {
+    public void createFolder() {
         File file = new File(MainActivity.DATA_FOLDER);
 
-        if (! file.exists())
-        {
+        if (!file.exists()) {
             file.mkdirs();
         }
     }
 
-    public  boolean isStoragePermissionGranted()
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+    public boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (
                     checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED &&
                             checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED
-            )
-            {
+            ) {
                 // Requests permission
                 requestPermissions(new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -129,49 +129,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-        {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Create Data Folder if not exists
             createFolder();
             start();
-            showSoftKeyboard();
-        }
-        else
-        {
+
+        } else {
             finish();
         }
     }
 
-    public void showSoftKeyboard()
-    {
+    /**
+    public void showSoftKeyboard(View view) {
         // Focus on TextField
-        this.editText1.setFocusableInTouchMode(true);
         this.editText1.requestFocus();
-    }
 
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+
+    }
+    **/
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
-        try
-        {
+        try {
 
             FileOutputStream fio = new FileOutputStream(new File(this.fileName));
             fio.write(this.editText1.getText().toString().getBytes());
             fio.close();
-        }
-        catch (Exception err)
-        {
+        } catch (Exception err) {
             makeToast(err.toString());
         }
     }
 
-    public void makeToast(String str)
-    {
+    public void makeToast(String str) {
         Toast.makeText(this.getApplicationContext(), str, Toast.LENGTH_SHORT).show();
     }
 }
