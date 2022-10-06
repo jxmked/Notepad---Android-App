@@ -15,6 +15,7 @@ import android.os.Build;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.widget.ScrollView;
+import android.content.res.*;
 
 public class MainActivity extends Activity
 {
@@ -29,7 +30,24 @@ public class MainActivity extends Activity
 	{
         super.onCreate(bundle);
         getWindow().setSoftInputMode(3);
-        setContentView(R.layout.activity_main);
+
+		
+		int nightModeFlags = getResources().getConfiguration().uiMode &
+			Configuration.UI_MODE_NIGHT_MASK;
+		switch (nightModeFlags) {
+			case Configuration.UI_MODE_NIGHT_YES:
+				setContentView(R.layout.activity_main_dark);
+				break;
+
+			case Configuration.UI_MODE_NIGHT_NO:
+				setContentView(R.layout.activity_main);
+				break;
+
+			case Configuration.UI_MODE_NIGHT_UNDEFINED:
+				setContentView(R.layout.activity_main);
+				break;
+		}
+		
 		this.editText1 = (EditText) findViewById(R.id.mainTextField);
 		this.scrollView = (ScrollView) findViewById(R.id.scrollView);
 
@@ -44,6 +62,7 @@ public class MainActivity extends Activity
 		// If not, request.
 		if (isStoragePermissionGranted())
 		{
+			createFolder();
 			start();
 		}
 
@@ -118,6 +137,7 @@ public class MainActivity extends Activity
 			// Create Data Folder if not exists
 			createFolder();
 			start();
+			showSoftKeyboard(); 
 		}
 		else
 		{
