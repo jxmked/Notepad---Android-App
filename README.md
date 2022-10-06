@@ -1,9 +1,17 @@
 # Note.
 
-***My first android notepad app***
-
 ***Written using Android [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui&hl=en&gl=US&referrer=utm_source%3Dgoogle%26utm_medium%3Dorganic%26utm_term%3Daide+apk&pcampaignid=APPU_1_FzQxY5DqIciK2roP3rSfwAw)***
 
+## No's
+- No Undo/Redo
+- No Click to save
+- No Advertisement
+- No Setting
+- No Popup
+- No Loading Screen
+- No Search
+
+- ***Just Write and Go***
 
 ## Features:
 - Smooth scroll
