@@ -1,7 +1,5 @@
 package io.xcreation.notepad;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,8 +11,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import android.app.Activity;
+import android.content.pm.*;
+import android.content.*;
+import android.net.*;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
     EditText editText1;
     String fileName;
     Context MyContext;
@@ -33,22 +35,28 @@ public class MainActivity extends AppCompatActivity {
         this.editText1 = (EditText) findViewById(R.id.mainTextField);
         this.fileName = getResources().getString(R.string.file_name);
 
-        /**
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-        Path dir = Paths.get(path, "xio");
-        this.main_file = Paths.get(dir.toString(), "main.txt").toFile();
-
-        // Check if directory does exists
-        File __dir = new File(dir.toString());
-        if(! __dir.exists()) {
-            if(! __dir.mkdirs()){
-                Toast.makeText(this.MyContext, "Unable to create path", Toast.LENGTH_SHORT).show();
-                finish();
-                System.exit(-1);
-            }
-        }
-        **/
+	    String toFile = Paths.get("xio", "main.txt").toAbsolutePath().toString();
+		
+		
+		 // Check if directory does exists
+		File file = new File(path,toFile);
+		
+		//Toast.makeText(this.MyContext, folde, Toast.LENGTH_SHORT).show();
+		
+		if(! file.getParentFile().exists()) {
+		 	if(! file.mkdirs()){
+		 		Toast.makeText(this.MyContext, "Unable to create path", Toast.LENGTH_SHORT).show();
+		 		//finish();
+		 		//System.exit(-1);
+			}
+		}
+		
+		
+	 	//this.fileName = main_file.getAbsolutePath();
+		 
         try {
             FileInputStream openFileInput = openFileInput(this.fileName);
 
@@ -63,8 +71,27 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception err) {
             Toast.makeText(this.MyContext, err.toString(), Toast.LENGTH_SHORT).show();
         }
+ 	}
+	
+	@Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 123: {
+					if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+						//If user presses allow
+						Toast.makeText(MainActivity.this, "Permission granted!", Toast.LENGTH_SHORT).show();
+						//Intent in = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + num.getText().toString()));
+						//startActivity(in);
+					} else {
+						//If user presses deny
+						Toast.makeText(MainActivity.this, "Permission denied", Toast.LENGTH_SHORT).show();
+					}
+					break;
+				}
+        }
     }
-
     @Override
     public void onPause() {
         super.onPause();
