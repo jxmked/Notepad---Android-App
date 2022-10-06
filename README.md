@@ -1,6 +1,6 @@
 # Note.
 
-***Written using Android [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui&hl=en&gl=US&referrer=utm_source%3Dgoogle%26utm_medium%3Dorganic%26utm_term%3Daide+apk&pcampaignid=APPU_1_FzQxY5DqIciK2roP3rSfwAw)***
+***Quickly note memories***
 
 ## No's
 - No Undo/Redo
