@@ -14,10 +14,12 @@
         <EditText
             android:id="@+id/mainTextField"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/black"
             android:fadingEdge="vertical"
+            android:fontFamily="@font/montserrat"
             android:gravity="top"
+            android:importantForAutofill="no"
             android:inputType="none|text|textMultiLine|textNoSuggestions"
             android:padding="5dp"
             android:scrollbars="vertical"
