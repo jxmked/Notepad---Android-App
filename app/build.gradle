@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'io.xcreation.notepad'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "io.xcreation.notepad"
-        minSdk 26
-        targetSdk 32
+        minSdk 16
+        targetSdk 33
         versionCode 4
         versionName "3.3"
 
