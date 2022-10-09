@@ -1,9 +1,10 @@
 package io.xcreation.notepad;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,32 +13,34 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     EditText editText1;
     String fileName;
     final private static String DATA_FOLDER_NAME = ".xio";
     private static String DATA_FOLDER;
-    private SharedPreferences Pref;
+    SharedPreferences Pref = null;
+    private Menu menu;
+
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         getWindow().setSoftInputMode(3);
+        setContentView(R.layout.activity_main);
 
-        // Load theme then set view
-        String theme = get_current_theme();
-        changeTheme(theme);
-
-        this.editText1 = (EditText) findViewById(R.id.mainTextField);
+        this.editText1 = findViewById(R.id.mainTextField);
         this.Pref = getSharedPreferences("setting", 0);
+
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         // Overwrite External Data folder with absolute path
@@ -54,80 +57,65 @@ public class MainActivity extends AppCompatActivity {
         if (isStoragePermissionGranted()) {
             createFolder();
             start();
+            reload_themes();
         }
+    }
+
+    void set_theme() {
+        final boolean mode = this.Pref.getBoolean("dark_mode", true);
+
+        // Update
+        SharedPreferences.Editor editor = this.Pref.edit();
+        editor.putBoolean("dark_mode", !mode);
+        editor.commit();
+    }
+
+    void reload_themes(){
+        final boolean mode = this.Pref.getBoolean("dark_mode", true);
+        final int theme = (mode) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES;
+
+        // Set app theme mode
+        AppCompatDelegate.setDefaultNightMode(theme);
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         if(id == R.id.toggle_dark_mode) {
-            // Get saved theme data
-            String theme = get_current_theme();
-
-            if(theme.equals("light")) {
-                theme = "dark";
-            } else {
-                theme = "light";
-            }
-
-            set_pref_theme(theme);
-            changeTheme(theme);
-
-            onPause();
-            start();
+            set_theme();
+            reload_themes();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
-    void set_pref_theme(String latest_theme){
-        SharedPreferences.Editor setting = this.Pref.edit();
-        setting.putString("theme", latest_theme);
-        setting.apply();
-    }
-
-    String get_current_theme(){
-        // We don't apply a default value to tell us that it is not set
-        String theme = this.Pref.getString("theme", "");
-
-        if(theme.equals("")) {
-            // No preferences
-            SharedPreferences.Editor setting = this.Pref.edit();
-            setting.putString("theme", "light");
-            setting.apply();
-
-            theme = "light";
-        }
-
-        return theme;
-    }
-
-    protected void changeTheme(String mode) {
-        if(Objects.equals(mode, "dark")) {
-            setContentView(R.layout.activity_main_dark);
-        } else {
-            setContentView(R.layout.activity_main);
-        }
-    }
 
     protected void start() {
         try {
             File file = new File(this.fileName);
 
-            if (!file.exists()) {
-                file.createNewFile();
+            if (! file.exists() && file.createNewFile()) {
+                makeToast("Failed to create text file to store data. Exiting...");
+                finish();
             }
 
             FileInputStream fis = new FileInputStream(file);
 
             byte[] bArr = new byte[fis.available()];
 
+            // Throws an error if the file is empty
+            // or failed to read
             fis.read(bArr);
 
             this.editText1.setText(new String(bArr));
@@ -142,7 +130,10 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(MainActivity.DATA_FOLDER);
 
         if (!file.exists()) {
-            file.mkdirs();
+            if(! file.mkdirs()) {
+                makeToast("Failed to create required directory. Exiting...");
+                finish();
+            }
         }
     }
 
@@ -165,29 +156,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Create Data Folder if not exists
             createFolder();
             start();
+            reload_themes();
 
         } else {
             finish();
         }
     }
 
-    /**
-     public void showSoftKeyboard(View view) {
-     // Focus on TextField
-     this.editText1.requestFocus();
-
-     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-     imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-
-     }
-     **/
     @Override
     public void onPause() {
         super.onPause();

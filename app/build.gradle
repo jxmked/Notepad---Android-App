@@ -10,8 +10,8 @@ android {
         applicationId "io.xcreation.notepad"
         minSdk 16
         targetSdk 33
-        versionCode 5
-        versionName "3.4"
+        versionCode 6
+        versionName "4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
