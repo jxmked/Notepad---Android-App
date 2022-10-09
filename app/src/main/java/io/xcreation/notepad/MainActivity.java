@@ -42,17 +42,14 @@ public class MainActivity extends AppCompatActivity {
         this.Pref = getSharedPreferences("setting", 0);
 
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
-        final String FILENAME = "main.txt";
 
         // Overwrite External Data folder with absolute path
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             MainActivity.DATA_FOLDER = Paths.get(__root__, MainActivity.DATA_FOLDER_NAME, getResources().getString(R.string.app_name)).toString();
-            //this.fileName = Paths.get(MainActivity.DATA_FOLDER, String.valueOf(R.string.file_name)).toString();
-            this.fileName = Paths.get(MainActivity.DATA_FOLDER, FILENAME).toString();
+            this.fileName = Paths.get(MainActivity.DATA_FOLDER, String.valueOf(R.string.file_name)).toString();
         } else {
             MainActivity.DATA_FOLDER = __root__ + MainActivity.DATA_FOLDER_NAME + getResources().getString(R.string.app_name);
-            //this.fileName = MainActivity.DATA_FOLDER + R.string.file_name;
-            this.fileName = MainActivity.DATA_FOLDER + FILENAME; // Temp Fix
+            this.fileName = MainActivity.DATA_FOLDER + getResources().getString(R.string.file_name);
         }
 
         // Check if permission is already granted
