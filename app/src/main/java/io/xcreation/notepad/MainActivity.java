@@ -3,14 +3,15 @@ package io.xcreation.notepad;
 import android.Manifest;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
@@ -20,20 +21,23 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
-    private final EditText editText1 = (EditText) findViewById(R.id.mainTextField);
-    private final View darkMode_toggle = findViewById(R.id.toggle_dark_mode);
-    private final static String DATA_FOLDER_NAME = ".xio";
+    EditText editText1;
+    String fileName;
+    final private static String DATA_FOLDER_NAME = ".xio";
     private static String DATA_FOLDER;
-    private String fileName;
-    private final SharedPreferences Pref = getSharedPreferences("Setting", 0);
+    private SharedPreferences Pref;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         getWindow().setSoftInputMode(3);
 
-        setContentView(R.layout.activity_main);
+        // Load theme then set view
+        String theme = get_current_theme();
+        changeTheme(theme);
 
+        this.editText1 = (EditText) findViewById(R.id.mainTextField);
+        this.Pref = getSharedPreferences("setting", 0);
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         // Overwrite External Data folder with absolute path
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             this.fileName = Paths.get(MainActivity.DATA_FOLDER, String.valueOf(R.string.file_name)).toString();
         } else {
             MainActivity.DATA_FOLDER = __root__ + MainActivity.DATA_FOLDER_NAME + getResources().getString(R.string.app_name);
-            this.fileName = MainActivity.DATA_FOLDER + R.string.file_name;
+            this.fileName = MainActivity.DATA_FOLDER + getResources().getString(R.string.file_name);
         }
 
         // Check if permission is already granted
@@ -51,29 +55,35 @@ public class MainActivity extends AppCompatActivity {
             createFolder();
             start();
         }
+    }
 
-        // Load Theme
-       /* String theme = toggle_dark_light_mode();
-        changeTheme(theme);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        // TODO: Add event listener to toggle between dark and light mode
-        darkMode_toggle.setOnClickListener(v -> {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-            // Get current theme
-            String theme1 = toggle_dark_light_mode();
+        if(id == R.id.toggle_dark_mode) {
+            // Get saved theme data
+            String theme = get_current_theme();
 
-            // Switch light to dark mode
-            if(theme1.equals("light")) {
-                set_pref_theme("dark");
+            if(theme.equals("light")) {
+                theme = "dark";
             } else {
-                set_pref_theme("light");
+                theme = "light";
             }
 
-            // Get latest changes then apply
-            theme1 = toggle_dark_light_mode();
-            changeTheme(theme1);
-        }); */
+            set_pref_theme(theme);
+            changeTheme(theme);
 
+            onPause();
+            start();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     void set_pref_theme(String latest_theme){
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         setting.apply();
     }
 
-    String toggle_dark_light_mode(){
+    String get_current_theme(){
         // We don't apply a default value to tell us that it is not set
         String theme = this.Pref.getString("theme", "");
 
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             theme = "light";
         }
 
-       return theme;
+        return theme;
     }
 
     protected void changeTheme(String mode) {
@@ -155,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -168,6 +178,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     public void showSoftKeyboard(View view) {
+     // Focus on TextField
+     this.editText1.requestFocus();
+
+     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+     imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
+
+     }
+     **/
     @Override
     public void onPause() {
         super.onPause();

@@ -4,6 +4,7 @@
 
     <item android:id="@+id/toggle_dark_mode"
         android:title="toggle_dark_mode"
+        android:icon="@drawable/dark_mode_icon"
         app:showAsAction="always"/>
 
 </menu>
