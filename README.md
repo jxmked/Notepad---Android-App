@@ -18,10 +18,10 @@
 - Perfect dark text with white background
 - Like a single sheet of paper
 - Lightweight
+- Toggle Dark and Light Mode
 
 
 ## TODO:
-- Add Dark and Light mode
 - Font size
 - Font text
 
