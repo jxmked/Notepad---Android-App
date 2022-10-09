@@ -1,16 +1,22 @@
 package io.xcreation.notepad;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,75 +25,97 @@ import java.nio.file.Paths;
 
 public class MainActivity extends AppCompatActivity {
     EditText editText1;
-    ScrollView scrollView;
     String fileName;
     final private static String DATA_FOLDER_NAME = ".xio";
     private static String DATA_FOLDER;
+    SharedPreferences Pref = null;
+    private Menu menu;
+
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         getWindow().setSoftInputMode(3);
+        setContentView(R.layout.activity_main);
 
-        int nightModeFlags = getResources().getConfiguration().uiMode &
-                Configuration.UI_MODE_NIGHT_MASK;
-        switch (nightModeFlags) {
-            case Configuration.UI_MODE_NIGHT_YES:
-                setContentView(R.layout.activity_main_dark);
-                break;
-
-            case Configuration.UI_MODE_NIGHT_NO:
-                setContentView(R.layout.activity_main);
-                break;
-
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                setContentView(R.layout.activity_main);
-                break;
-        }
-
-        this.editText1 = (EditText) findViewById(R.id.mainTextField);
-        this.scrollView = (ScrollView) findViewById(R.id.scrollView);
+        this.editText1 = findViewById(R.id.mainTextField);
+        this.Pref = getSharedPreferences("setting", 0);
 
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         // Overwrite External Data folder with absolute path
-        MainActivity.DATA_FOLDER = Paths.get(__root__, MainActivity.DATA_FOLDER_NAME, getResources().getString(R.string.app_name)).toString();
-
-        this.fileName = Paths.get(MainActivity.DATA_FOLDER, "main.txt").toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            MainActivity.DATA_FOLDER = Paths.get(__root__, MainActivity.DATA_FOLDER_NAME, getResources().getString(R.string.app_name)).toString();
+            this.fileName = Paths.get(MainActivity.DATA_FOLDER, String.valueOf(R.string.file_name)).toString();
+        } else {
+            MainActivity.DATA_FOLDER = __root__ + MainActivity.DATA_FOLDER_NAME + getResources().getString(R.string.app_name);
+            this.fileName = MainActivity.DATA_FOLDER + getResources().getString(R.string.file_name);
+        }
 
         // Check if permission is already granted
         // If not, request.
         if (isStoragePermissionGranted()) {
             createFolder();
             start();
+            reload_themes();
         }
+    }
 
-        // TODO: Touch layout/Scrollview then focus on textfield
-        /**
-        final ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView);
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                showSoftKeyboard(view);
-                return false;
-            }
-        });
-        **/
+    void set_theme() {
+        final boolean mode = this.Pref.getBoolean("dark_mode", true);
+
+        // Update
+        SharedPreferences.Editor editor = this.Pref.edit();
+        editor.putBoolean("dark_mode", !mode);
+        editor.commit();
+    }
+
+    void reload_themes(){
+        final boolean mode = this.Pref.getBoolean("dark_mode", true);
+        final int theme = (mode) ? AppCompatDelegate.MODE_NIGHT_NO : AppCompatDelegate.MODE_NIGHT_YES;
+
+        // Set app theme mode
+        AppCompatDelegate.setDefaultNightMode(theme);
+
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.toggle_dark_mode) {
+            set_theme();
+            reload_themes();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     protected void start() {
         try {
             File file = new File(this.fileName);
 
-            if (!file.exists()) {
-                file.createNewFile();
+            if (! file.exists() && file.createNewFile()) {
+                makeToast("Failed to create text file to store data. Exiting...");
+                finish();
             }
 
             FileInputStream fis = new FileInputStream(file);
 
             byte[] bArr = new byte[fis.available()];
 
+            // Throws an error if the file is empty
+            // or failed to read
             fis.read(bArr);
 
             this.editText1.setText(new String(bArr));
@@ -102,7 +130,10 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(MainActivity.DATA_FOLDER);
 
         if (!file.exists()) {
-            file.mkdirs();
+            if(! file.mkdirs()) {
+                makeToast("Failed to create required directory. Exiting...");
+                finish();
+            }
         }
     }
 
@@ -125,35 +156,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Create Data Folder if not exists
             createFolder();
             start();
+            reload_themes();
 
         } else {
             finish();
         }
     }
 
-    /**
-    public void showSoftKeyboard(View view) {
-        // Focus on TextField
-        this.editText1.requestFocus();
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-
-    }
-    **/
     @Override
     public void onPause() {
         super.onPause();
         try {
 
-            FileOutputStream fio = new FileOutputStream(new File(this.fileName));
+            FileOutputStream fio = new FileOutputStream(this.fileName);
             fio.write(this.editText1.getText().toString().getBytes());
             fio.close();
         } catch (Exception err) {

@@ -7,12 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="dark_700">#FF242426</color>
     <color name="dark_600">#FF363638</color>
-    <color name="black">#FF3A3A3C</color>
     <color name="light_100">#FF6C6C70</color>
     <color name="light_200">#FF8E8E93</color>
+    <color name="black">#FF3A3A3C</color>
     <color name="white">#FFF2F2F7</color>
 
-    <color name="textColor" tools:ignore="MissingDefaultResource">@color/black</color>
-    <color name="background" tools:ignore="MissingDefaultResource">@color/white</color>
-
+    <color name="textColor" tools:ignore="MissingDefaultResource">@color/white</color>
+    <color name="background" tools:ignore="MissingDefaultResource">@color/black</color>
 </resources>
