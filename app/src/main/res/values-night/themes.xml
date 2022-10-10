@@ -6,7 +6,14 @@
         <item name="colorSecondary">@color/light_100</item>
         <item name="colorSecondaryVariant">@color/light_200</item>
         <item name="colorOnSecondary">@color/black</item>
+
         <item name="android:statusBarColor" tools:targetApi="lollipop">?attr/colorPrimaryVariant</item>
         <item name="android:icon">@drawable/light_mode_icon</item>
+
+        <!-- Change bottom navigation bar color -->
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/black</item>
+
+        <!-- Change buttons color in bottom navigation bar -->
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
     </style>
 </resources>

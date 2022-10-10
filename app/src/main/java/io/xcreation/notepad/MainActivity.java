@@ -2,6 +2,7 @@ package io.xcreation.notepad;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -42,17 +43,15 @@ public class MainActivity extends AppCompatActivity {
         this.Pref = getSharedPreferences("setting", 0);
 
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
-        final String FILENAME = "main.txt";
+        final String FILENAME = getResources().getString(R.string.file_name);
 
         // Overwrite External Data folder with absolute path
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             MainActivity.DATA_FOLDER = Paths.get(__root__, MainActivity.DATA_FOLDER_NAME, getResources().getString(R.string.app_name)).toString();
-            //this.fileName = Paths.get(MainActivity.DATA_FOLDER, String.valueOf(R.string.file_name)).toString();
             this.fileName = Paths.get(MainActivity.DATA_FOLDER, FILENAME).toString();
         } else {
             MainActivity.DATA_FOLDER = __root__ + MainActivity.DATA_FOLDER_NAME + getResources().getString(R.string.app_name);
-            //this.fileName = MainActivity.DATA_FOLDER + R.string.file_name;
-            this.fileName = MainActivity.DATA_FOLDER + FILENAME; // Temp Fix
+            this.fileName = MainActivity.DATA_FOLDER + FILENAME;
         }
 
         // Check if permission is already granted
@@ -66,9 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
     void set_theme() {
         final boolean mode = this.Pref.getBoolean("dark_mode", true);
+        final SharedPreferences.Editor editor = this.Pref.edit();
 
-        // Update
-        SharedPreferences.Editor editor = this.Pref.edit();
         editor.putBoolean("dark_mode", !mode);
         editor.commit();
     }
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // Set app theme mode
         AppCompatDelegate.setDefaultNightMode(theme);
 
-
+        getWindow().setWindowAnimations(R.style.WindowAnimationFadeInOut);
     }
 
     @Override
@@ -93,16 +91,13 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if(id == R.id.toggle_dark_mode) {
+        if(item.getItemId() == R.id.toggle_dark_mode) {
             set_theme();
             reload_themes();
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     protected void start() {
         try {
