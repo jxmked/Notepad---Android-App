@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/toggle_dark_mode"
-        android:title="toggle_dark_mode"
+        android:title="@string/toggle_dark"
         android:icon="?android:attr/icon"
         app:showAsAction="always"
         />

@@ -9,10 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     final private static String DATA_FOLDER_NAME = ".xio";
     private static String DATA_FOLDER;
     SharedPreferences Pref = null;
-    ScrollView scrollView;
 
     @Override
     public void onCreate(Bundle bundle) {
@@ -37,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.editText1 = findViewById(R.id.mainTextField);
-        this.scrollView = (ScrollView) findViewById(R.id.scrollView);
         this.Pref = getSharedPreferences("setting", 0);
 
         final String __root__ = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -91,14 +86,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.toggle_dark_mode) {
-            // Fade out
-            // Animation fade_out = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
-            // this.scrollView.startAnimation(fade_out);
-
             set_theme();
             reload_themes();
-            // Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
-            // this.scrollView.startAnimation(fadeIn);
         }
 
         return super.onOptionsItemSelected(item);

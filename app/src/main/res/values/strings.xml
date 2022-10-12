@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Notepad</string>
     <string name="file_name">main.txt</string>
+    <string name="toggle_dark">toggle_dark_mode</string>
 </resources>
