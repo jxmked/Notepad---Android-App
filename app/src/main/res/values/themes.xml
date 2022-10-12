@@ -1,5 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Notepad" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <!-- Top Title Nav Bar -->
         <item name="colorPrimary">@color/light_100</item>
         <item name="colorPrimaryVariant">@color/light_200</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -8,5 +10,14 @@
         <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor" tools:targetApi="lollipop">?attr/colorPrimaryVariant</item>
         <item name="android:icon">@drawable/dark_mode_icon</item>
+        <item name="colorAccent">@color/black</item>
+
+        <!-- Change bottom navigation bar color -->
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">@color/white</item>
+
+        <!-- Change buttons color in bottom navigation bar -->
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
+
+
 </resources>
