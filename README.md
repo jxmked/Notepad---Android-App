@@ -1,8 +1,9 @@
 # Note.
 
-***Quickly note memories***
+**_Quickly note memories_**
 
 ## No's
+
 - No Undo/Redo
 - No Click to save
 - No Advertisement
@@ -11,26 +12,26 @@
 - No Loading Screen
 - No Search
 
-- ***Just Write and Go***
+- **_Just Write and Go_**
 
 ## Features:
+
 - Smooth scroll
 - Perfect dark text with white background
 - Like a single sheet of paper
 - Lightweight
 - Toggle Dark and Light Mode
 
-
 ## TODO:
+
 - Font size
 - Font text
 
 More...
 
-----
+---
 
-***Written by Jovan De Guia***
-
+**_Written by Jovan De Guia_**
 
 ## Socials
 
